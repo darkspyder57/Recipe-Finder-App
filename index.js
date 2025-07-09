@@ -2,8 +2,6 @@ const searchResultContainer = document.getElementById("searchResultContainer");
 const searchBtn = document.getElementById("searchBtn");
 const searchInput = document.getElementById("searchInput");
 
-
-
 function createAndAppendSearchResult(result) {
     const recipeCard = document.createElement("div");
     recipeCard.classList.add("recipe-card");
@@ -32,6 +30,8 @@ function createAndAppendSearchResult(result) {
     categoryArea.textContent = strArea;
     tagContainer.appendChild(categoryArea);
 
+    descriptionContainer.appendChild(tagContainer);
+
     let instructions = document.createElement("p");
     instructions.textContent = strInstructions;
     descriptionContainer.appendChild(instructions);
@@ -46,7 +46,7 @@ function createAndAppendSearchResult(result) {
 }
 
 function displayResults(searchResults) {
-    for (let result of searchResults){
+    for (let result of searchResults) {
         createAndAppendSearchResult(result);
     }
 }
@@ -54,21 +54,44 @@ function displayResults(searchResults) {
 searchBtn.addEventListener("click", function (event) {
     event.preventDefault();
     searchResultContainer.textContent = "";
-    const searchInputVal = searchInput.value;
-    console.log(searchInputVal);
+
+    const searchInputVal = searchInput.value.trim();
+    if (searchInputVal === "") {
+        Swal.fire({
+            icon: "warning",
+            title: "Empty Search",
+            text: "Please enter a meal name to search.",
+        });
+        return;
+    }
 
     const url = "https://www.themealdb.com/api/json/v1/1/search.php?s=" + searchInputVal;
-    let options = {
-        method: "GET"
-    };
 
-    fetch(url, options)
+    fetch(url)
         .then(function (response) {
             return response.json();
         })
         .then(function (jsonData) {
-            console.log(jsonData);
             let { meals } = jsonData;
+
+            if (!meals) {
+                searchResultContainer.textContent = "";
+                Swal.fire({
+                    icon: "info",
+                    title: "No Results Found",
+                    text: `No meals matched "${searchInputVal}". Try something else.`,
+                });
+                return;
+            }
+
             displayResults(meals);
+        })
+        .catch(function (error) {
+            console.error("Error fetching data:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Something went wrong. Please try again later.",
+            });
         });
 });

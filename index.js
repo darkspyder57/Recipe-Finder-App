@@ -1,6 +1,7 @@
 const searchResultContainer = document.getElementById("searchResultContainer");
 const searchBtn = document.getElementById("searchBtn");
 const searchInput = document.getElementById("searchInput");
+const spinner = document.getElementById("spinner");
 
 function createAndAppendSearchResult(result) {
     const recipeCard = document.createElement("div");
@@ -65,6 +66,8 @@ searchBtn.addEventListener("click", function (event) {
         return;
     }
 
+    spinner.style.display = "block"; // Show spinner
+
     const url = "https://www.themealdb.com/api/json/v1/1/search.php?s=" + searchInputVal;
 
     fetch(url)
@@ -72,6 +75,7 @@ searchBtn.addEventListener("click", function (event) {
             return response.json();
         })
         .then(function (jsonData) {
+            spinner.style.display = "none"; // Hide spinner
             let { meals } = jsonData;
 
             if (!meals) {
@@ -87,6 +91,7 @@ searchBtn.addEventListener("click", function (event) {
             displayResults(meals);
         })
         .catch(function (error) {
+            spinner.style.display = "none"; // Hide spinner on error
             console.error("Error fetching data:", error);
             Swal.fire({
                 icon: "error",

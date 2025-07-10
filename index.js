@@ -89,6 +89,7 @@ searchBtn.addEventListener("click", function (event) {
             }
 
             displayResults(meals);
+            searchResultContainer.scrollIntoView({ behavior: "smooth" });
         })
         .catch(function (error) {
             spinner.style.display = "none"; // Hide spinner on error
@@ -99,4 +100,23 @@ searchBtn.addEventListener("click", function (event) {
                 text: "Something went wrong. Please try again later.",
             });
         });
+});
+
+const scrollTopBtn = document.getElementById("scrollTopBtn");
+
+// Show button when scrolling down
+window.onscroll = function () {
+    if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+        scrollTopBtn.style.display = "block";
+    } else {
+        scrollTopBtn.style.display = "none";
+    }
+};
+
+// Scroll to top on button click
+scrollTopBtn.addEventListener("click", function () {
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 });
